@@ -143,7 +143,7 @@ def extract_logged_features(hits, query_id):
             feature_value = float(log_entry.get("value", 0))
             try:
                 feature_results[feature_name].append(feature_value)
-            except TypeError:
+            except KeyError:
                 feature_results[feature_name] = [feature_value]
 
     frame = pd.DataFrame(feature_results)
