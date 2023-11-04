@@ -63,7 +63,12 @@ if __name__ == '__main__':
     print("Writing results to %s" % output_file)
     with multiprocessing.Pool() as p:
         all_labels = tqdm(p.imap(_label_filename, files), total=len(files))
+
+        import pandas as pd
+        import itertools as it
+        df = pd.DataFrame.from_records(it.chain(*all_labels), columns=["cat", "name"])
+        df = df.groupby('cat').filter(lambda x: x['cat'].count() > min_products)
+        
         with open(output_file, 'w') as output:
-            for label_list in all_labels:
-                for (cat, name) in label_list:
-                    output.write(f'__label__{cat} {name}\n')
+            for index, row in df.iterrows():
+                    output.write(f'__label__{row["cat"]} {row["name"]}\n')
